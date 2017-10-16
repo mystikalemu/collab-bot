@@ -93,12 +93,52 @@ class profile():
         
         return( "tune updated to {0}".format( self.tune ) )
         
+    def verify( self ):
+        test = [ "name", "hiatus", "yt_link", "sc_link", "deviant_link", "subscriptions", "subscribers", "collabs",
+                 "artist", "animate", "mix", "vocals", "tune", "available" ]
+
+        try:
+            for val in test:
+                if( not hasattr( self, val ) ):
+                    return( False )
+            return( True )
+        except:
+            return( False )
+
+    def get_str( self ):
+        test = [ "name", "hiatus", "yt_link", "sc_link", "deviant_link", "subscriptions", "subscribers", "collabs",
+                 "artist", "animate", "mix", "vocals", "tune", "available" ]
+        s = ""
+        try:
+            for val in test:
+                s += "{0}, {1}\n".format( val, getattr( self, val ) )
+        except:
+            s = "Something went wrong..."
+
+        return( s )
 
 
+profiles = {}
 
-class collaborator():
+def get_profile( key ):
+    if( key in profiles.keys() ):
+        temp = pickle.load( open( "data\\{0}.cb".format( key ), "rb" ) )
+        if( temp.verify() == False ):def verify( self ):
+            # log( pickle load verificaiton failed
+            temp = None
+            return( None )
+        else:
+            return( temp )
 
-    def __init__():
+def update_profile( key, prof ):
+    if( prof.verify() ):
+        if( key in profiles.keys() ):
+            os.rename( os.path.join( "data", "{0}.cb".format( prof.name ) ), 
+                       os.path.join( "data", "{0}_backup.cb".format( prof.name ) ) )
+
+        pickle.dump( prof, os.path.join( "data", "{0}.cb".format( prof.name ) ) )
+    else:
+        # log error, unable to dump profile
         pass
 
 @bot.event
@@ -111,13 +151,21 @@ async def on_ready():
 @bot.group(pass_context=True)
 async def awesome(ctx): 
     if ctx.invoked_subcommand is None:
-        await bot.say( "Of course {0.subcommand_passed} is cool!".format(ctx))
+        for thing in dir(ctx):
+            print(thing, getattr(ctx, thing))
+        await bot.say( "Of course {0.subcommand_passed} is cool! Called by {1.author}".format(ctx, ctx.message))
         
 @bot.command()
 async def joined(member : discord.Member):
     """Says when a member joined."""
-    await bot.say('{0.name} joined in {0.joined_at}'.format(member))
+    await bot.say('{0.name}{0.discriminator} joined in {0.joined_at}'.format(member))
       
+        
+@bot.command(pass_context=True)
+async def profile(ctx):
+    if ctx.invoked_subcommand is None:
+        author = ctx.message.author
+
         
         
         
